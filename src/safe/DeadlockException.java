@@ -1,4 +1,4 @@
-package msc;
+package safe;
 
 public class DeadlockException extends RuntimeException {
 

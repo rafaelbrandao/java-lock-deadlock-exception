@@ -41,7 +41,7 @@ public abstract class AbstractOwnableSynchronizer
      * {@code volatile} field accesses.
      * @param thread the owner thread
      */
-    protected final void setExclusiveOwnerThread(Thread thread) {
+    protected void setExclusiveOwnerThread(Thread thread) {
         exclusiveOwnerThread = thread;
     }
 

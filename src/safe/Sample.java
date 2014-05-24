@@ -10,18 +10,24 @@ public class Sample {
         Thread t1 = new Thread(new Runnable() {
             public void run() {
                 lock2.lock();
-                lock1.lock();
-                lock1.unlock();
-                lock2.unlock();
+                try {
+                    lock1.lock();
+                    try {
+                        // do some work                    }
+                    } finally { lock1.unlock(); }
+                } finally { lock2.unlock(); }
             }
           }        
         );
         Thread t2 = new Thread(new Runnable() {
             public void run() {
                 lock1.lock();
-                lock2.lock();
-                lock1.unlock();
-                lock2.unlock();
+                try {
+                    lock2.lock();
+                    try {
+                        // do some work                    }
+                    } finally { lock2.unlock(); }
+                } finally { lock1.unlock(); }
             }
           }        
         );

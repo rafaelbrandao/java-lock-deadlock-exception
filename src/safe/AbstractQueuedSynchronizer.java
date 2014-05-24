@@ -2,6 +2,9 @@ package safe;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.LockSupport;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.LinkedList;
+import java.util.Iterator;
 import java.lang.reflect.Field;
 
 /*
@@ -809,6 +812,12 @@ public abstract class AbstractQueuedSynchronizer
      * @return {@code true} if interrupted
      */
     private final boolean parkAndCheckInterrupt() {
+        Thread conflictingThread = getExclusiveOwnerThread();
+        if (isAnyOwnedLockDesiredBy(conflictingThread)) {
+            clearOwnedLocksByCurrentThread();
+            throw new DeadlockException();
+        }
+
         LockSupport.park(this);
         return Thread.interrupted();
     }
@@ -2288,4 +2297,101 @@ public abstract class AbstractQueuedSynchronizer
                                                    Node update) {
         return unsafe.compareAndSwapObject(node, nextOffset, expect, update);
     }
+
+    /**
+     * The following code is related to deadlock detection between 2 threads.
+     * Unfortunately this could not be moved to a separate class because java
+     * does not support multiple inheritance and/or there's a method that makes
+     * direct use of AbstractQueuedSynchronizer's tail.
+     *
+     * @author Rafael Brandao
+     * @author Fernando Castor
+     */
+
+    /** Maps threads to its own list of owned locks */
+    static ConcurrentHashMap<Thread, LinkedList<AbstractQueuedSynchronizer>> ownedLocks = new ConcurrentHashMap<Thread, LinkedList<AbstractQueuedSynchronizer>>();    
+
+    /**
+     * Returns the list of owned locks. If this is the first time used
+     * by the thread, then an empty list will be created. Please note
+     * only in this case the threads may concurrently block each other.
+     * @return the list of owned locks
+     */
+    static LinkedList<AbstractQueuedSynchronizer> getOwnedLocksByCurrentThread() {
+        Thread t = Thread.currentThread();
+        LinkedList<AbstractQueuedSynchronizer> list = ownedLocks.get(t);
+        if (list == null)  {
+            list = new LinkedList<AbstractQueuedSynchronizer>();
+            ownedLocks.put(t, list);
+        }
+        return list;
+    }
+
+    /** Clears the list of owned locks. Used before raising DeadlockException. */
+    static void clearOwnedLocksByCurrentThread() {
+        Thread t = Thread.currentThread();
+        LinkedList<AbstractQueuedSynchronizer> list = ownedLocks.get(t);
+        if (list != null) {
+            list.clear();
+            ownedLocks.remove(t);
+        }
+    }
+
+    /** Register current object as owned lock by the current thread */
+    private void registerOwnedLock() {
+        getOwnedLocksByCurrentThread().addFirst(this);
+        System.out.println("Obtained " + this + " by " + Thread.currentThread());
+    }
+
+    /** Unregister current object as owned lock by the current thread */
+    private void unregisterOwnedLock() {
+        getOwnedLocksByCurrentThread().removeFirstOccurrence(this);
+        System.out.println("Released " + this + " by " + Thread.currentThread());
+    }
+
+    /** Extend original method to do register/unregister in the end */
+    protected final void setExclusiveOwnerThread(Thread thread) {
+        super.setExclusiveOwnerThread(thread);
+        if (thread == null) {
+            unregisterOwnedLock();
+        } else {
+            registerOwnedLock();
+        }
+    }
+
+    /**
+     * This is where the deadlock is detected. This function is only used
+     * when the current thread is about to be blocked after failing upon trying
+     * to acquire a given lock. Since the current thread's list of locks won't change,
+     * it's safe to iterate over its list and check if that conflicting owner is also
+     * trying to acquire any of those locks. If so, we have a deadlock.
+     *
+     * Suppose Thread A owns lock A, Thread B owns lock B and both threads are trying
+     * to acquire opposite locks. We have the possibly situations:
+     *
+     * Thread A joined waiting queue of lock B and failed to acquire it
+     * Thread A is about to block
+     * Thread A checks on each of its locks if Thread B is trying to acquire
+     * Case 1: Thread B still didn't join the waiting queue of a lock owned by A.
+     *   Thread A blocks without raising exception. As soon as Thread B join a waiting
+     *   queue of any lock owned by A it will be about to block and this algorithm restarts,
+     *   however it will always fall in the second (and following) case.
+     * Case 2: Thread B did join some waiting queue of a lock owned by A, then
+     *   that check will return true and the exception will be raised.
+     * @return true if the given thread is trying to acquire one of the current thread's locks
+     */
+    static boolean isAnyOwnedLockDesiredBy(Thread owner) {
+        LinkedList<AbstractQueuedSynchronizer> ownedLocks = getOwnedLocksByCurrentThread();
+        Iterator<AbstractQueuedSynchronizer> iter = ownedLocks.iterator();
+        while(iter.hasNext()) {
+            AbstractQueuedSynchronizer sync = iter.next();
+            for (AbstractQueuedSynchronizer.Node p = sync.tail; p != null; p = p.prev) {
+                if (p.thread == owner) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }
