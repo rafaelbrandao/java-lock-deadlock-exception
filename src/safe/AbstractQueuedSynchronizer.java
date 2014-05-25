@@ -2344,13 +2344,11 @@ public abstract class AbstractQueuedSynchronizer
     /** Register current object as owned lock by the current thread */
     private void registerOwnedLock() {
         getOwnedLocksByCurrentThread().addFirst(this);
-        System.out.println("Obtained " + this + " by " + Thread.currentThread());
     }
 
     /** Unregister current object as owned lock by the current thread */
     private void unregisterOwnedLock() {
         getOwnedLocksByCurrentThread().removeFirstOccurrence(this);
-        System.out.println("Released " + this + " by " + Thread.currentThread());
     }
 
     /** Extend original method to do register/unregister in the end */
