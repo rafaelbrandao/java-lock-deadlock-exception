@@ -545,6 +545,10 @@ public abstract class AbstractQueuedSynchronizer
         return unsafe.compareAndSwapInt(this, stateOffset, expect, update);
     }
 
+    final Thread getOwner() {
+        return getState() == 0 ? null : getExclusiveOwnerThread();
+    }
+
     // Queuing utilities
 
     /**
@@ -812,7 +816,7 @@ public abstract class AbstractQueuedSynchronizer
      * @return {@code true} if interrupted
      */
     private final boolean parkAndCheckInterrupt() {
-        Thread conflictingThread = getExclusiveOwnerThread();
+        Thread conflictingThread = getOwner();
         if (isAnyOwnedLockDesiredBy(conflictingThread)) {
             clearOwnedLocksByCurrentThread();
             throw new DeadlockException();

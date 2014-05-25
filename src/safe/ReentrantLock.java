@@ -145,10 +145,6 @@ public class ReentrantLock implements Lock, java.io.Serializable {
 
         // Methods relayed from outer class
 
-        final Thread getOwner() {
-            return getState() == 0 ? null : getExclusiveOwnerThread();
-        }
-
         final int getHoldCount() {
             return isHeldExclusively() ? getState() : 0;
         }
