@@ -2,7 +2,6 @@ package safe;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.LockSupport;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.lang.reflect.Field;
@@ -2312,8 +2311,12 @@ public abstract class AbstractQueuedSynchronizer
      * @author Fernando Castor
      */
 
-    /** Maps threads to its own list of owned locks */
-    static ConcurrentHashMap<Thread, LinkedList<AbstractQueuedSynchronizer>> ownedLocks = new ConcurrentHashMap<Thread, LinkedList<AbstractQueuedSynchronizer>>();    
+    /** Thread-local variable to specify which locks the current thread owns */
+    static ThreadLocal<LinkedList<AbstractQueuedSynchronizer>> ownedLocks = new ThreadLocal<LinkedList<AbstractQueuedSynchronizer>>() {
+        protected LinkedList<AbstractQueuedSynchronizer> initialValue() {
+            return null;
+        }
+    };
 
     /**
      * Returns the list of owned locks. If this is the first time used
@@ -2322,22 +2325,19 @@ public abstract class AbstractQueuedSynchronizer
      * @return the list of owned locks
      */
     static LinkedList<AbstractQueuedSynchronizer> getOwnedLocksByCurrentThread() {
-        Thread t = Thread.currentThread();
-        LinkedList<AbstractQueuedSynchronizer> list = ownedLocks.get(t);
+        LinkedList<AbstractQueuedSynchronizer> list = ownedLocks.get();
         if (list == null)  {
             list = new LinkedList<AbstractQueuedSynchronizer>();
-            ownedLocks.put(t, list);
+            ownedLocks.set(list);
         }
         return list;
     }
 
     /** Clears the list of owned locks. Used before raising DeadlockException. */
     static void clearOwnedLocksByCurrentThread() {
-        Thread t = Thread.currentThread();
-        LinkedList<AbstractQueuedSynchronizer> list = ownedLocks.get(t);
+        LinkedList<AbstractQueuedSynchronizer> list = ownedLocks.get();
         if (list != null) {
             list.clear();
-            ownedLocks.remove(t);
         }
     }
 
