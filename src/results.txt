@@ -30,3 +30,131 @@ Threads: 200, Contadores: 10, Limite de contagem por thread: 1000, Lock: safe.Re
 Repetições: 70 (consideradas ultimas 50 execucoes)
 Tempo médio: 0.205860 s (+56.9%)
 
+Threads: 10, Contadores: 10, Limite de contagem por thread: 1000, Lock: ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.085175 s 
+
+Threads: 10, Contadores: 10, Limite de contagem por thread: 1000, Lock: safe.ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.096528 s (+13.3%)
+
+Threads: 50, Contadores: 10, Limite de contagem por thread: 1000, Lock: ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.087643 s 
+
+Threads: 50, Contadores: 10, Limite de contagem por thread: 1000, Lock: safe.ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.126238 s (+44.0%)
+
+Threads: 100, Contadores: 10, Limite de contagem por thread: 1000, Lock: ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.093399 s 
+
+Threads: 100, Contadores: 10, Limite de contagem por thread: 1000, Lock: safe.ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.150640 s (+61.3%)
+
+Threads: 200, Contadores: 10, Limite de contagem por thread: 1000, Lock: ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.129086 s 
+
+Threads: 200, Contadores: 10, Limite de contagem por thread: 1000, Lock: safe.ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.190130 s (+47.3%)
+
+Threads: 10, Contadores: 10, Limite de contagem por thread: 1000, Lock: ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.084669 s 
+
+Threads: 10, Contadores: 10, Limite de contagem por thread: 1000, Lock: safe.ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.096267 s (+13.7%)
+
+Threads: 50, Contadores: 10, Limite de contagem por thread: 1000, Lock: ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.084465 s 
+
+Threads: 50, Contadores: 10, Limite de contagem por thread: 1000, Lock: safe.ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.126462 s (+49.7%)
+
+Threads: 100, Contadores: 10, Limite de contagem por thread: 1000, Lock: ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.089676 s 
+
+Threads: 100, Contadores: 10, Limite de contagem por thread: 1000, Lock: safe.ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.145621 s (+62.4%)
+
+Threads: 200, Contadores: 10, Limite de contagem por thread: 1000, Lock: ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.115911 s 
+
+Threads: 200, Contadores: 10, Limite de contagem por thread: 1000, Lock: safe.ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.182250 s (+57.2%)
+
+Threads: 10, Contadores: 10, Limite de contagem por thread: 1000, Lock: ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.083235 s 
+
+Threads: 10, Contadores: 10, Limite de contagem por thread: 1000, Lock: safe.ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.096586 s (+16.0%)
+
+Threads: 50, Contadores: 10, Limite de contagem por thread: 1000, Lock: ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.082261 s 
+
+Threads: 50, Contadores: 10, Limite de contagem por thread: 1000, Lock: safe.ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.126239 s (+53.5%)
+
+Threads: 100, Contadores: 10, Limite de contagem por thread: 1000, Lock: ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.089459 s 
+
+Threads: 100, Contadores: 10, Limite de contagem por thread: 1000, Lock: safe.ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.144836 s (+61.9%)
+
+Threads: 200, Contadores: 10, Limite de contagem por thread: 1000, Lock: ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.119647 s 
+
+Threads: 200, Contadores: 10, Limite de contagem por thread: 1000, Lock: safe.ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.187364 s (+56.6%)
+
+Threads: 10, Contadores: 10, Limite de contagem por thread: 1000, Lock: ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.084961 s 
+
+Threads: 10, Contadores: 10, Limite de contagem por thread: 1000, Lock: safe.ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.093916 s (+10.5%)
+
+Threads: 50, Contadores: 10, Limite de contagem por thread: 1000, Lock: ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.083100 s 
+
+Threads: 50, Contadores: 10, Limite de contagem por thread: 1000, Lock: safe.ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.126230 s (+51.9%)
+
+Threads: 100, Contadores: 10, Limite de contagem por thread: 1000, Lock: ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.087831 s 
+
+Threads: 100, Contadores: 10, Limite de contagem por thread: 1000, Lock: safe.ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.144790 s (+64.9%)
+
+Threads: 200, Contadores: 10, Limite de contagem por thread: 1000, Lock: ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.121210 s 
+
+Threads: 200, Contadores: 10, Limite de contagem por thread: 1000, Lock: safe.ReentrantLock
+Repetições: 70 (consideradas ultimas 50 execucoes)
+Tempo médio: 0.178872 s (+47.6%)
+

@@ -1,5 +1,5 @@
 sample:
-	javac safe/Sample.java
-	javac safe/OverheadExperiment.java
+	javac -d $(HOME)/out safe/Sample.java
+	javac -d $(HOME)/out safe/OverheadExperiment.java
 clean:
-	rm safe/*.class
+	rm -r $(HOME)/out/safe

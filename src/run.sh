@@ -1,1 +1,1 @@
-java safe.Sample
+java -cp $HOME/out safe.Sample

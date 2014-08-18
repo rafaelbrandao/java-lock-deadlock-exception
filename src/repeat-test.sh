@@ -2,8 +2,10 @@
 
 make clean
 make
-for i in $(seq 1 $1)
+times=$1
+shift
+for i in $(seq 1 $times)
 do
   echo 'Running test #' $i
-  java safe.Sample
+  $*
 done
