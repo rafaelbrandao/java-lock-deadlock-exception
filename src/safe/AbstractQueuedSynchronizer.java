@@ -816,7 +816,11 @@ public abstract class AbstractQueuedSynchronizer
      */
     private final boolean parkAndCheckInterrupt() {
         Thread conflictingThread = getOwner();
-        if (isAnyOwnedLockDesiredBy(conflictingThread)) {
+        LinkedList<AbstractQueuedSynchronizer> desiredLocks = getOwnedLocksDesiredBy(conflictingThread);
+        if (!desiredLocks.isEmpty()) {
+            for (AbstractQueuedSynchronizer a : desiredLocks) {
+                a.markTaintedThread(conflictingThread);
+            }
             clearOwnedLocksByCurrentThread();
             throw new DeadlockException();
         }
@@ -2303,9 +2307,6 @@ public abstract class AbstractQueuedSynchronizer
 
     /**
      * The following code is related to deadlock detection between 2 threads.
-     * Unfortunately this could not be moved to a separate class because java
-     * does not support multiple inheritance and/or there's a method that makes
-     * direct use of AbstractQueuedSynchronizer's tail.
      *
      * @author Rafael Brandao
      * @author Fernando Castor
@@ -2317,6 +2318,9 @@ public abstract class AbstractQueuedSynchronizer
             return null;
         }
     };
+
+    /** This holds a list of threads that got involved in a deadlock. As soon as they acquire the lock, an exception should be given. **/
+    private LinkedList<Thread> taintedThreads = new LinkedList<Thread>();
 
     /**
      * Returns the list of owned locks. If this is the first time used
@@ -2358,6 +2362,10 @@ public abstract class AbstractQueuedSynchronizer
             unregisterOwnedLock();
         } else {
             registerOwnedLock();
+            if (isThreadTainted()) {
+                clearOwnedLocksByCurrentThread();
+                throw new DeadlockException();
+            }
         }
     }
 
@@ -2382,18 +2390,59 @@ public abstract class AbstractQueuedSynchronizer
      *   that check will return true and the exception will be raised.
      * @return true if the given thread is trying to acquire one of the current thread's locks
      */
-    static boolean isAnyOwnedLockDesiredBy(Thread owner) {
+    static LinkedList<AbstractQueuedSynchronizer> getOwnedLocksDesiredBy(Thread owner) {
         LinkedList<AbstractQueuedSynchronizer> ownedLocks = getOwnedLocksByCurrentThread();
         Iterator<AbstractQueuedSynchronizer> iter = ownedLocks.iterator();
+        LinkedList<AbstractQueuedSynchronizer> desiredLocks = new LinkedList<AbstractQueuedSynchronizer>();
         while(iter.hasNext()) {
             AbstractQueuedSynchronizer sync = iter.next();
             for (AbstractQueuedSynchronizer.Node p = sync.tail; p != null; p = p.prev) {
                 if (p.thread == owner) {
-                    return true;
+                    desiredLocks.addLast(sync);
+                    break;
                 }
             }
         }
-        return false;
+        return desiredLocks;
+    }
+
+    /* Marks a certain thread as tainted in this lock. As soon as it acquire the lock, it should raise a deadlock exception. */
+    private void markTaintedThread(Thread tainted) {
+        taintedThreads.addFirst(tainted);
+        clearInactiveTaintedThreads(null);
+    }
+
+    /*
+        This function will remove any threads that are no longer alive from the list of tainted threads in this lock.
+        Optionally, it can also return true if a given thread was present and return it from the list if true.
+
+        Threads can potentially leave a reference in this list when both threads in the deadlock
+        detect each other in a deadlock simultaneously. In that case, they both will mark the oppositing
+        thread on each lock they desire but since they will both raise an exception, none of them will
+        try to acquire their desired lock, leaving their thread object in both lists.
+
+        Each thread that eventually manages this list will attempt to remove all threads that are no longer alive,
+        doing a favor for those threads that are no longer alive and couldn't do it themselves.
+    */
+    private boolean clearInactiveTaintedThreads(Thread tainted) {
+        boolean wasFound = false;
+        final Iterator<Thread> it = taintedThreads.iterator();
+
+        while (it.hasNext()) {
+            Thread t = it.next();
+            if (!t.isAlive()) {
+                it.remove();
+            } else if (tainted != null && t == tainted) {
+                it.remove();
+                wasFound = true;
+            }
+        }
+        return wasFound;
+    }
+
+    /* Checks if the current thread is tainted in this lock and also removes any thread that is no longer alive from the list */
+    private boolean isThreadTainted() {
+        return clearInactiveTaintedThreads(Thread.currentThread());
     }
 
 }
