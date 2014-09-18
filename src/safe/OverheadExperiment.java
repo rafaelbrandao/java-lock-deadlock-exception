@@ -39,6 +39,8 @@ public class OverheadExperiment {
             Lock lock;
             if (type.equals("s"))
                 lock = new safe.ReentrantLock();
+            else if (type.equals("e"))
+                lock = new safe.EclipseLock();
             else
                 lock = new ReentrantLock();
             counters.add(new Counter(lock));

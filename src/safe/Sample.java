@@ -4,8 +4,8 @@ import java.util.concurrent.locks.Lock;
 
 public class Sample {
     public static void main(String args[]) {
-        final Lock lock1 = new safe.ReentrantLock();
-        final Lock lock2 = new safe.ReentrantLock();
+        final Lock lock1 = new safe.EclipseLock();
+        final Lock lock2 = new safe.EclipseLock();
         
         Thread t1 = new Thread(new Runnable() {
             public void run() {

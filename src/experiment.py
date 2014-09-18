@@ -7,14 +7,18 @@ import time
 import os
 
 _last_result = -1
+_result_count = 0
 
 def apply_last_result(result):
-    global _last_result
+    global _last_result, _result_count
     if (_last_result == -1):
         _last_result = result
         return ''
     s = (result / _last_result)
-    _last_result = -1
+    _result_count += 1
+    if _result_count == 2:
+        _last_result = -1
+        _result_count = 0
     if (s > 1):
         return '(+'+str(round(s-1.0,3)*100)+'%)'
     elif (s < 1):
@@ -24,6 +28,8 @@ def apply_last_result(result):
 def lock_type(lockType):
     if lockType == 's':
         return 'safe.ReentrantLock'
+    elif lockType == 'e':
+        return 'EclipseLock'
     return 'ReentrantLock'
 
 def measure_execution_test(threads, counters, lock, nexecutions, repetitions, ignore_first_executions=0):
@@ -53,12 +59,16 @@ def measure_execution_test(threads, counters, lock, nexecutions, repetitions, ig
 if __name__ == '__main__':
     measure_execution_test(10, 10, 'r', 1000, 70, 20)
     measure_execution_test(10, 10, 's', 1000, 70, 20)
+    measure_execution_test(10, 10, 'e', 1000, 70, 20)
 
     measure_execution_test(50, 10, 'r', 1000, 70, 20)
     measure_execution_test(50, 10, 's', 1000, 70, 20)
+    measure_execution_test(50, 10, 'e', 1000, 70, 20)
 
     measure_execution_test(100, 10, 'r', 1000, 70, 20)
     measure_execution_test(100, 10, 's', 1000, 70, 20)
+    measure_execution_test(100, 10, 'e', 1000, 70, 20)
 
     measure_execution_test(200, 10, 'r', 1000, 70, 20)
     measure_execution_test(200, 10, 's', 1000, 70, 20)
+    measure_execution_test(200, 10, 'e', 1000, 70, 20)
