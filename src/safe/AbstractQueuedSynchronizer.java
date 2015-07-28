@@ -816,13 +816,15 @@ public abstract class AbstractQueuedSynchronizer
      */
     private final boolean parkAndCheckInterrupt() {
         Thread conflictingThread = getOwner();
-        LinkedList<AbstractQueuedSynchronizer> desiredLocks = getOwnedLocksDesiredBy(conflictingThread);
-        if (!desiredLocks.isEmpty()) {
-            for (AbstractQueuedSynchronizer a : desiredLocks) {
-                a.markTaintedThread(conflictingThread);
+        if (conflictingThread != null) {
+            LinkedList<AbstractQueuedSynchronizer> desiredLocks = getOwnedLocksDesiredBy(conflictingThread);
+            if (!desiredLocks.isEmpty()) {
+                for (AbstractQueuedSynchronizer a : desiredLocks) {
+                    a.markTaintedThread(conflictingThread);
+                }
+                clearOwnedLocksByCurrentThread();
+                throw new DeadlockException();
             }
-            clearOwnedLocksByCurrentThread();
-            throw new DeadlockException();
         }
 
         LockSupport.park(this);
